@@ -18,12 +18,18 @@ import org.robolectric.annotation.Config
 class FavoriteDaoTest {
     private lateinit var favoriteDao: FavoriteDao
     private lateinit var fakeDB: SqliteDB
+    private lateinit var fakePlace : Place
 
     @Before
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         fakeDB = SqliteDB(context, "test",null,1)
         favoriteDao = FavoriteDaoImpl(fakeDB.writableDatabase)
+    }
+
+    @Before
+    fun initFake(){
+        fakePlace = Place(1, "name", "address", PlaceCategory.CAFE,1.0, 1.0)
     }
 
     @After
@@ -33,7 +39,6 @@ class FavoriteDaoTest {
 
     @Test
     fun `id값으로 즐겨찾기 가져오기`() {
-        val fakePlace = Place(1, "name", "address", PlaceCategory.CAFE,1.0, 1.0)
         favoriteDao.addFavorite(fakePlace)
 
         favoriteDao.getFavoriteById(fakePlace.id).let{
@@ -43,7 +48,6 @@ class FavoriteDaoTest {
 
     @Test
     fun `존재하지 않는 항목이나 삭제된 항목을 찾을 시 null 반환`(){
-        val fakePlace = Place(1, "name", "address", PlaceCategory.CAFE,1.0, 1.0)
         favoriteDao.addFavorite(fakePlace)
         favoriteDao.deleteFavorite(fakePlace.id)
 
@@ -54,7 +58,6 @@ class FavoriteDaoTest {
     @Test
     fun `즐겨찾기 추가`(){
         val before = favoriteDao.getCurrentFavorite()
-        val fakePlace = Place(1, "name", "address", PlaceCategory.CAFE,1.0, 1.0)
         favoriteDao.addFavorite(fakePlace)
         val after = favoriteDao.getCurrentFavorite()
 
